@@ -3,9 +3,32 @@ const {
 } = require('celebrate');
 const validator = require('validator');
 
-const register = celebrate({
+const signup = celebrate({
   [Segments.BODY]: Joi.object().keys({
-    name: Joi.string().min(2).max(30),
+    name: Joi.string().required().min(2).max(30)
+      .messages({
+        'string.empty': 'Поле name не может быть пустым',
+        'any.required': 'Укажите Имя',
+      }),
+    email: Joi.string().required().custom((value, helper) => {
+      if (!validator.isEmail(value)) {
+        return helper.error('string.notEmail');
+      }
+      return value;
+    }).messages({
+      'any.required': 'Укажите Email',
+      'string.notEmail': 'Неправильный формат Email',
+      'string.empty': 'Поле Email не может быть пустым',
+    }),
+    password: Joi.string().required().messages({
+      'any.required': 'Укажите пароль',
+      'string.empty': 'Поле password не может быть пустым',
+    }),
+  }),
+});
+
+const signin = celebrate({
+  [Segments.BODY]: Joi.object().keys({
     email: Joi.string().required().custom((value, helper) => {
       if (!validator.isEmail(value)) {
         return helper.error('string.notEmail');
@@ -105,12 +128,13 @@ const movieId = celebrate({
 
 const updateInfo = celebrate({
   [Segments.BODY]: Joi.object().keys({
-    name: Joi.string().min(2).max(30).messages({
-      'any.required': 'Укажите имя',
-      'string.min': 'Имя должно быть больше 2-х символов',
-      'string.max': 'Имя не может быть больше 30 символов',
-      'string.empty': 'Поле name не может быть пустым',
-    }),
+    name: Joi.string().required().min(2).max(30)
+      .messages({
+        'any.required': 'Укажите имя',
+        'string.min': 'Имя должно быть больше 2-х символов',
+        'string.max': 'Имя не может быть больше 30 символов',
+        'string.empty': 'Поле name не может быть пустым',
+      }),
     email: Joi.string().required().custom((value, helper) => {
       if (!validator.isEmail(value)) {
         return helper.error('string.notEmail');
@@ -125,5 +149,5 @@ const updateInfo = celebrate({
 });
 
 module.exports = {
-  register, movie, updateInfo, movieId,
+  signup, signin, movie, updateInfo, movieId,
 };

@@ -11,10 +11,6 @@ module.exports.createUser = (req, res, next) => {
     email, password, name,
   } = req.body;
 
-  if (!email || !password) {
-    throw new ErrorValidation('Неправильный email или пароль');
-  }
-
   User.findOne({ email })
     .then((user) => {
       if (user) {

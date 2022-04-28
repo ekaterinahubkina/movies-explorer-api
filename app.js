@@ -2,28 +2,26 @@ require('dotenv').config();
 const express = require('express');
 const mongoose = require('mongoose');
 const { errors } = require('celebrate');
-const { createUser, login } = require('./controllers/users');
 const auth = require('./middlewares/auth');
 const errorHandler = require('./middlewares/errorHandler');
 const { requestLogger, errorLogger } = require('./middlewares/logger');
 const ErrorNotFound = require('./errors/ErrorNotFound');
 
+const { NODE_ENV, DB_URL } = process.env;
 const { PORT = 3000 } = process.env;
 
 const app = express();
 app.use(express.json());
 
-mongoose.connect('mongodb://localhost:27017/bitfilmsdb');
+mongoose.connect(NODE_ENV === 'production' ? DB_URL : 'mongodb://localhost:27017/moviesdb');
 
 app.use(requestLogger);
 
-app.post('/signup', createUser);
-app.post('/signin', login);
+require('./routes/auth')(app);
 
 app.use(auth);
 
-app.use('/users', require('./routes/users'));
-app.use('/movies', require('./routes/movies'));
+require('./routes/index')(app);
 
 app.use((req, res, next) => {
   next(new ErrorNotFound('Неправильный путь'));

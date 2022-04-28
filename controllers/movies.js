@@ -9,11 +9,6 @@ module.exports.createFilm = (req, res, next) => {
     trailerLink, thumbnail, movieId, nameRU, nameEN,
   } = req.body;
 
-  if (!country || !director || !duration || !year || !description || !image
-    || !trailerLink || !thumbnail || !movieId || !nameRU || !nameEN) {
-    throw new ErrorValidation('Некорректные данные');
-  }
-
   Movie.create({
     country,
     director,
@@ -53,12 +48,12 @@ module.exports.deleteMovie = (req, res, next) => {
       if (movie.owner.toString() !== req.user._id) {
         throw new ErrorForbidden('Нельзя удалить фильм другого пользователя');
       }
-      movie.remove();
-      res.send({ data: movie });
+      return movie.remove();
     })
+    .then(() => res.send({ message: 'Фильм удалён' }))
     .catch((err) => {
       if (err.name === 'CastError') {
-        next(new ErrorValidation('Неверный _id карточки'));
+        next(new ErrorValidation('Неверный _id фильма'));
       } else {
         next(err);
       }
