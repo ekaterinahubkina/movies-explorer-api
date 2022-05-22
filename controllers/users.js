@@ -22,7 +22,7 @@ module.exports.createUser = (req, res, next) => {
       name, email, password: hash,
     }))
     .then((user) => User.findOne({ _id: user._id }))
-    .then((user) => res.send({ user }))
+    .then((user) => res.send(user))
     .catch((err) => {
       if (err.name === 'ValidationError') {
         next(new ErrorValidation('Некорректные данные'));
@@ -48,7 +48,7 @@ module.exports.getCurrentUser = (req, res, next) => {
       if (!user) {
         throw new ErrorNotFound('Пользователь не найден');
       }
-      res.send({ data: user });
+      res.send(user);
     })
     .catch((err) => next(err));
 };

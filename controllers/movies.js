@@ -35,7 +35,7 @@ module.exports.createFilm = (req, res, next) => {
 
 module.exports.getMovies = (req, res, next) => {
   Movie.find({})
-    .then((movies) => res.send({ movies }))
+    .then((movies) => res.send(movies))
     .catch((err) => next(err));
 };
 
@@ -50,7 +50,7 @@ module.exports.deleteMovie = (req, res, next) => {
       }
       return movie.remove();
     })
-    .then(() => res.send({ message: 'Фильм удалён' }))
+    .then((movie) => res.send(movie))
     .catch((err) => {
       if (err.name === 'CastError') {
         next(new ErrorValidation('Неверный _id фильма'));
