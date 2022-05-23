@@ -16,10 +16,7 @@ app.use(express.json());
 
 mongoose.connect(NODE_ENV === 'production' ? DB_URL : 'mongodb://localhost:27017/moviesdb-dev');
 
-app.use(cors({
-  origin: ['http://localhost:3000', 'https://api.movies.hubkina.nomoredomains.work'],
-  credentials: true,
-}));
+app.use(cors());
 
 app.use(requestLogger);
 
